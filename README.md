@@ -126,7 +126,7 @@ the `authorized_keys` on the gateway.
 should do this. The gateway should assure, that this file isn't tempered
 with afterwards.
 
-#### regular calling
+#### regular calling with systemd
 
 The easiest way to do this would be via a cron script.
 
@@ -144,6 +144,17 @@ application server:
 Afterwards the trigger can be enabled by
 
     systemctl --user enable sshproxy_syncfile.timer
+
+#### regular calling with cron
+
+For convenience, the file `ssphroxy_syncfile.cron` is provided as a
+template for regular execution of file syncronization via cron.
+
+In this file, the username and path should be adjusted.
+
+With resp. to the systemd timer, it has the advantage, that a mail is
+send everytime a public key is updated and it is easier to set up.
+On the other hand the systemd management  isnt' available.
 
 ## proxying external connections
 

@@ -1,0 +1,7 @@
+PATH=/bin:/usr/bin
+MAILTO=root
+
+* * * * *       sshapp    if [ -x /usr/bin/sshproxy_syncfile ]; then nice -n10 /usr/bin/sshproxy_syncfile; fi
+
+# EOF
+
