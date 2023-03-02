@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for d in $SSHPROXY_CONF $HOME/.ssh /etc/ssh; do
+	for f in $(basename $0) sshproxy_gateway; do
+		CNF="$d/proxy/$f.conf"
+		if [ -n "$d" -a -n "$f" -a -f "$CNF" ]; then
+			. "$CNF"
+			break 2
+		fi
+	done
+done
+
+if [ -z "${internal_server}" ]; then
+	echo "incomplete configuration"
+	exit 1
+fi
+
+eval "$(printf "${ssh_command:-ssh %s@%s %s}" "${internal_user:-${user:-$(id -un)}}" "${internal_server}" "X_SSH_ORIGINAL_COMMAND=\\\"${SSH_ORIGINAL_COMMAND}\\\" \"$0\" $*")"

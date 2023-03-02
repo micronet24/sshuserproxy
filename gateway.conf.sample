@@ -1,0 +1,10 @@
+## name of the internal server
+internal_server=
+
+## name of the user to use on internal server
+## by default the currently logged in user is used
+# user=
+
+## command (template) to perform ssh-sessions.
+## paramters: username, servername, command
+# ssh_command = "ssh %s@%s %s"
