@@ -1,0 +1,16 @@
+## name of the gateway server
+gateway=
+
+## name of the user to use on the gateway
+## by default the currently logged in user is used
+# user=
+
+## Name of the local file to sync
+## by default `~/.ssh/authorized_keys2`
+## May be given as first commandline argument
+# localfile=~/.ssh/authorized_keys2
+
+## Name of the remote file on the gateway server
+## by default it is the same as on the internal server.
+## May be given as second commandline argument
+# remotefile=${localfile}

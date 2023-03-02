@@ -1,0 +1,62 @@
+#!/bin/bash
+
+for d in $SSHPROXY_CONF $HOME/.ssh /etc/ssh; do
+	CNF="$d/proxy/syncfile.conf"
+	if [ -n "$d" -a -f "$CNF" ]; then
+		. "$CNF"
+		break
+	fi
+done
+
+if [ -z "${gateway}" ]; then
+	echo "incomplete configuration"
+	exit 1
+fi
+
+declare LOCALFILE REMOTEFILE
+
+if [ -n "$1" ]; then
+	LOCALFILE="$1"
+else
+	LOCALFILE="${localfile:-~/.ssh/authorized_keys2}"
+fi
+
+if [ -n "$2" ]; then
+	REMOTEFILE="$2"
+else
+	REMOTEFILE="${remotefile:-${LOCALFILE}}"
+fi
+
+if [ "${LOCALFILE:0:2}" == "~/" ]; then
+	LOCALFILE="${HOME}/${LOCALFILE:2}"
+fi
+if [ "${REMOTEFILE:0:2}" == "~/" ]; then
+	REMOTEFILE="${REMOTEFILE:2}"
+fi
+if [ "${REMOTEFILE:0:$[${#HOME}+1]}" == "${HOME}/" ]; then
+	REMOTEFILE="${REMOTEFILE:$[${#HOME}+1]}"
+fi
+
+if [ ! -f "${LOCALFILE}" ]; then
+	echo "File '${LOCALFILE}' not found!"
+	exit 1
+fi
+
+SHATOOL=sha256sum
+SHAFILE="${LOCALFILE}.sum"
+SHASUM=$(which ${SHATOOL})
+
+if [ -z "${SHASUM}" -o \! -e "${SHASUM}" ]; then
+	echo "${SHATOOL} not found"
+	exit 1
+fi
+
+if [ -f "${SHAFILE}" ] && ${SHASUM} --check --quiet "${SHAFILE}"; then
+	exit 0
+fi
+
+set -e
+
+echo "put \"${LOCALFILE}\" \"${REMOTEFILE}\"" | sftp "${user:-$(id -un)}@${gateway}"
+
+${SHASUM} "${LOCALFILE}" > "${SHAFILE}"
