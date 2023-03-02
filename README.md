@@ -112,7 +112,7 @@ file might be a bit overkill.
 
 a second variant is to `scp` the file regularly, exp. via cron.
 
-The script `syncfile` does this copying. In fact it checks, wether the
+The script `sshproxy_syncfile` does this copying. In fact it checks, wether the
 file has been modified before performing the file-transfer itself.
 
 In preparation an additional key-pair should be generated, so that
@@ -125,6 +125,25 @@ the `authorized_keys` on the gateway.
 
 should do this. The gateway should assure, that this file isn't tempered
 with afterwards.
+
+#### regular calling
+
+The easiest way to do this would be via a cron script.
+
+Alternatively, this can be done using a systemd-timer as well. The
+corresponding files (`sshproxy_syncfile.target` and
+`sshproxy_syncfile.timer`) are provided.
+
+As the timer should be started as a certain user (eg. `sshapp`), the
+corresponding user-session has to be always active (not only after
+login), so the following command should be executed as root on the
+application server:
+
+    loginctl enable-linger sshapp
+
+Afterwards the trigger can be enabled by
+
+    systemctl --user enable sshproxy_syncfile.timer
 
 ## proxying external connections
 
